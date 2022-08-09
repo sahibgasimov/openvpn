@@ -61,11 +61,29 @@ resource "aws_instance" "openvpn" {
   subnet_id     = "subnet-092e82366475f1e18"
 
   vpc_security_group_ids = ["${aws_security_group.openvpn.id}"]
-
+  
+  #resource "aws_volume_attachment" "ebs_att" {
+  #device_name = "/dev/sdh"
+  #instance_id = "${aws_instance.openvpn.id}"
+  #volume_id   = "${aws_ebs_volume.openvpn_data.id}"  
   provisioner "local-exec" {
     command = "ansible-playbook --private-key ~/.ssh/id_rsa.pub -i '${aws_instance.openvpn.public_ip},' config/ansible/openvpn.yml"
   }
 }
+
+
+
+#resource "aws_ebs_volume" "openvpn_data" {
+ # availability_zone = "${var.ebs_region}"
+  #size              = "${var.ebs_size}"
+  #encrypted         = true
+
+  #lifecycle {
+   # prevent_destroy = false
+  #}
+#}
+
+
 
 resource "aws_route53_record" "openvpn" {
   zone_id = "${var.route_zone_id}"
